@@ -1,0 +1,235 @@
+substitutions:
+  name: zb-gw03
+esphome:
+  name: zb-gw03
+  comment: ${device_description}
+  project:
+    name: syssi.esphome-zb-gw03
+    version: 2.0.1
+  on_boot:
+  - priority: 600.0
+    then:
+    - switch.turn_off:
+        id: download_mode
+    - switch.turn_on:
+        id: zigbee_reset
+  friendly_name: zb-gw03
+  build_path: build/zb-gw03
+  area: ''
+  platformio_options: {}
+  includes: []
+  libraries: []
+  name_add_mac_suffix: false
+  min_version: 2023.12.5
+esp32:
+  board: esp32dev
+  framework:
+    version: 2.0.5
+    source: ~3.20005.0
+    platform_version: platformio/espressif32@5.4.0
+    type: arduino
+  flash_size: 4MB
+  variant: ESP32
+external_components:
+- source:
+    url: https://github.com/oxan/esphome-stream-server.git
+    ref: master
+    type: git
+  refresh: 1d
+  components: all
+ota:
+  password: cafce52688407769ab6c383f4419bbdb
+  safe_mode: true
+  port: 3232
+  reboot_timeout: 5min
+  num_attempts: 10
+logger:
+  level: DEBUG
+  baud_rate: 115200
+  tx_buffer_size: 512
+  deassert_rts_dtr: false
+  hardware_uart: UART0
+  logs: {}
+api:
+  encryption:
+    key: 2gbmgdRlWfHtXN64nVSec4FaGVFV/BIDhbp1/Ttd3xA=
+  port: 6053
+  password: ''
+  reboot_timeout: 15min
+uart:
+- id: uart_zigbee
+  rx_pin:
+    number: 4
+    mode:
+      input: true
+      output: false
+      open_drain: false
+      pullup: false
+      pulldown: false
+    inverted: false
+    ignore_strapping_warning: false
+    drive_strength: 20.0
+  tx_pin:
+    number: 2
+    mode:
+      output: true
+      input: false
+      open_drain: false
+      pullup: false
+      pulldown: false
+    inverted: false
+    ignore_strapping_warning: false
+    drive_strength: 20.0
+  baud_rate: 115200
+  rx_buffer_size: 256
+  stop_bits: 1
+  data_bits: 8
+  parity: NONE
+stream_server:
+- uart_id: uart_zigbee
+  port: 6638
+  buffer_size: 128
+switch:
+- platform: restart
+  name: zb-gw03 Restart
+  disabled_by_default: false
+  restore_mode: ALWAYS_OFF
+  entity_category: config
+  icon: mdi:restart
+- platform: template
+  id: zigbee_reset
+  name: zb-gw03 Zigbee Reset
+  turn_on_action:
+    then:
+    - switch.turn_on:
+        id: zigbee_rst
+    - delay: 10ms
+    - switch.turn_off:
+        id: zigbee_rst
+  disabled_by_default: false
+  restore_mode: ALWAYS_OFF
+  optimistic: false
+  assumed_state: false
+- platform: gpio
+  id: zigbee_rst
+  pin:
+    number: 13
+    mode:
+      output: true
+      input: false
+      open_drain: false
+      pullup: false
+      pulldown: false
+    inverted: false
+    ignore_strapping_warning: false
+    drive_strength: 20.0
+  name: zb-gw03 Zigbee nRST
+  inverted: true
+  internal: true
+  restore_mode: ALWAYS_OFF
+  disabled_by_default: false
+  interlock_wait_time: 0ms
+- platform: gpio
+  id: download_mode
+  pin:
+    number: 12
+    mode:
+      output: true
+      input: false
+      open_drain: false
+      pullup: false
+      pulldown: false
+    inverted: false
+    ignore_strapping_warning: false
+    drive_strength: 20.0
+  name: zb-gw03 Zigbee Download Mode
+  inverted: true
+  restore_mode: ALWAYS_OFF
+  disabled_by_default: false
+  interlock_wait_time: 0ms
+ethernet:
+  type: LAN8720
+  mdc_pin: 23
+  mdio_pin: 18
+  clk_mode: GPIO17_OUT
+  phy_addr: 1
+  power_pin: 16
+  domain: .local
+  use_address: zb-gw03.local
+status_led:
+  pin:
+    number: 15
+    inverted: true
+    mode:
+      output: true
+      input: false
+      open_drain: false
+      pullup: false
+      pulldown: false
+    ignore_strapping_warning: false
+    drive_strength: 20.0
+light:
+- platform: monochromatic
+  name: zb-gw03 green led
+  output: output0
+  disabled_by_default: false
+  restore_mode: ALWAYS_ON
+  gamma_correct: 2.8
+  default_transition_length: 1s
+  flash_transition_length: 0s
+output:
+- platform: ledc
+  pin:
+    number: 14
+    mode:
+      output: true
+      input: false
+      open_drain: false
+      pullup: false
+      pulldown: false
+    inverted: false
+    ignore_strapping_warning: false
+    drive_strength: 20.0
+  id: output0
+  inverted: true
+  zero_means_zero: false
+  frequency: 1000.0
+i2c:
+- id: i2c_bus
+  sda: 33
+  scl: 32
+  scan: true
+  frequency: 50000.0
+binary_sensor:
+- platform: gpio
+  name: zb-gw03 Zigbee Reset Button
+  pin:
+    number: 34
+    inverted: true
+    mode:
+      input: true
+      output: false
+      open_drain: false
+      pullup: false
+      pulldown: false
+    ignore_strapping_warning: false
+    drive_strength: 20.0
+  on_press:
+  - then:
+    - switch.turn_off:
+        id: download_mode
+    - switch.turn_on:
+        id: zigbee_reset
+  disabled_by_default: false
+mdns:
+  services:
+  - service: zb-gw03
+    protocol: _tcp
+    port: 6638
+    txt:
+      name: zb-gw03
+      version: '1.0'
+      radio_type: ezsp
+      baud_rate: '115200'
+      data_flow_control: software
+  disabled: false
