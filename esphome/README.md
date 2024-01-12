@@ -18,3 +18,8 @@ Link to the repository: https://github.com/syssi/esphome-zb-gw03
 # Additional Instructions: 
 If you prefer Tasmota over ESPHome, you can upgrade from ESPHome to Tasmota through your web browser. The web address for this process is http://your_ip:80.
 
+
+# Warning!!!
+If Tasmota is pre-installed, after upgrading to ESPHome, you can only revert to Tasmota by flashing the Tasmota factory firmware through the serial port. However.
+
+if ESPHome is pre-installed, you can freely switch between ESPHome and Tasmota.
