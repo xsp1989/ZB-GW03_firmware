@@ -255,7 +255,7 @@ lib_ignore              =
                           USB
                           SPIFFS
                           ESP32 Azure IoT Arduino
-                          ESP32 Async UDP
+                          ;ESP32 Async UDP
                           ESP32 BLE Arduino
 ;                          SimpleBLE
                           NetBIOS
